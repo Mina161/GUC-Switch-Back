@@ -21,11 +21,11 @@ app.post("/login",upload.none(), async function (req, res) {
   console.log(req.body);
   var found = await login(req.body);
   if (found === null) {
-    res.writeHead(404, { "Content-Type": "text/plain" });
+    res.writeHead(404, { "Content-Type": "text/plain", "Access-Control-Allow-Headers": "*" });
     res.write("User not found");
     res.end();
   } else {
-    res.writeHead(200, { "Content-Type": "json" });
+    res.writeHead(200, { "Content-Type": "json", "Access-Control-Allow-Headers": "*" });
     res.write(JSON.stringify(found));
     res.end();
   }
