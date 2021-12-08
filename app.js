@@ -17,11 +17,17 @@ app.get("/", function(req,res){
 
 app.post("/login",async function(req, res){
   console.log(req.body)
-  var err = await login(req.body)
-  if(err) {
-    res.end("User Not Found");
+  var found = await login(req.body)
+  if(found === null) {
+    res.writeHead(404, {'Content-Type': 'text/plain'});
+    res.write("User not found");
+    res.end();
   }
-  else res.end("Logged in");
+  else {
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.write(JSON.stringify(found));
+    res.end();
+  }
 })
 
 app.post("/signup",async function(req, res){
@@ -49,8 +55,9 @@ async function addUser(data) {
 async function login(data) {
   await client.connect();
   var found = await client.db("GUC").collection("students").findOne({appNo: data.appNo, password: data.password})
+  console.log(found)
   client.close()
-  return found === null
+  return found
 }
 
 async function addRequest(data) {
@@ -59,6 +66,6 @@ async function addRequest(data) {
   client.close()
 }
 
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 8080);
 
 module.exports = app;
