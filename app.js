@@ -120,7 +120,12 @@ app.get("/match", upload.none(), async function (req, res) {
 });
 
 app.get("/match/contact", upload.none(), async function (req, res) {
-  await contactMatch(req.query.appNo);
+  await contactMatch(req.query.sender,req.query.receiver);
+  res.writeHead(200, {
+    "Content-Type": "text/plain",
+  });
+  res.write("Mail Sent!");
+  res.end();
 });
 
 //Server Constants
@@ -225,34 +230,26 @@ var transporter = nodemailer.createTransport({
   },
 });
 
-async function contactMatch() {
+async function contactMatch(sender,receiver) {
   await client.connect();
+  var appUser = await client
+  .db("GUC")
+  .collection("students")
+  .findOne({ appNo: sender });
 
   var info = await client
     .db("GUC")
     .collection("students")
-    .findOne({ appNo: appNo }, { projection: { name: 1, email: 1 } });
+    .findOne({ appNo: receiver }, { projection: { name: 1, email: 1 } });
 
   var mailOptions = {
     from: process.env.EMAIL,
     to: info.email,
     subject: "Switching Partner Found!",
-    html: (
-      <>
-        <h1>Hello {info.name}</h1>
-        <p>We found you a switching partner</p>
-        <br />
-        <p>
-          Name: {appUser.name}, Mobile Number: {appUser.phoneNo}, email:{" "}
-          {appUser.email}
-        </p>
-        <br />
-        <p>Give them a call to confirm the switch</p>
-      </>
-    ),
+    html: '<h1>Hello '+info.name+'</h1><p>We found you a switching partner</p><br /><p>Name: '+appUser.name+', Mobile Number: '+appUser.phoneNo+', email: '+appUser.email+'</p><br /><p>Give them a call to confirm the switch</p>',
   };
 
-  transporter.sendMail(mailOptions);
+  await transporter.sendMail(mailOptions);
 }
 
 app.listen(process.env.PORT || 8080);
