@@ -50,7 +50,7 @@ async function login(data) {
   await client.connect();
   var found = await client.db("GUC").collection("students").findOne({appNo: data.appNo, password: data.password})
   client.close()
-  return found
+  return found === null
 }
 
 async function addRequest(data) {
