@@ -59,6 +59,6 @@ async function addRequest(data) {
   client.close()
 }
 
-// app.listen(8080);
+app.listen(process.env.PORT || 3000);
 
 module.exports = app;
