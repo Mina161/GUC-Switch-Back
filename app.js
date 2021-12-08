@@ -51,12 +51,47 @@ app.post("/signup", upload.none(), async function (req, res) {
   }
 });
 
+app.get("/request", upload.none(), async function (req, res) {
+  var result = await getRequest(req.query.appNo);
+  if (result === null) {
+    res.writeHead(404, {
+      "Content-Type": "text/plain",
+    });
+    res.write("No Requests Found");
+    res.end();
+  } else {
+    res.writeHead(200, {
+      "Content-Type": "text/plain",
+    });
+    res.write(result);
+    res.end();
+  }
+});
+
 app.post("/request", upload.none(), async function (req, res) {
-  await addRequest(req.body);
+  var result = await addRequest(req.body);
   res.writeHead(200, {
     "Content-Type": "text/plain",
   });
-  res.write("Request Added Successfully");
+  res.write(result);
+  res.end();
+});
+
+app.put("/request", upload.none(), async function (req, res) {
+  var result = await editRequest(req.body);
+  res.writeHead(200, {
+    "Content-Type": "text/plain",
+  });
+  res.write(result);
+  res.end();
+});
+
+app.delete("/request", upload.none(), async function (req, res) {
+  await deleteRequest(req.query.appNo);
+  res.writeHead(200, {
+    "Content-Type": "text/plain",
+  });
+  res.write("Request Deleted Successfully");
   res.end();
 });
 
@@ -137,6 +172,23 @@ async function login(data) {
 async function addRequest(data) {
   await client.connect();
   await client.db("GUC").collection("requests").insertOne(data);
+  return await client.db("GUC").collection("requests").findOne(data);
+}
+
+async function editRequest(data) {
+  await client.connect();
+  await client.db("GUC").collection("requests").updateOne({appNo: data.appNo},{$set: data});
+  return await client.db("GUC").collection("requests").findOne({appNo: data.appNo});
+}
+
+async function deleteRequest(appNo) {
+  await client.connect();
+  await client.db("GUC").collection("requests").deleteOne({ appNo: appNo });
+}
+
+async function getRequest(appNo) {
+  await client.connect();
+  return await client.db("GUC").collection("requests").findOne(appNo);
 }
 
 async function getMatches(appNo) {
