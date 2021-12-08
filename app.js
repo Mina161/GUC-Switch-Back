@@ -3,6 +3,7 @@ var path = require("path");
 var app = express();
 const { MongoClient } = require("mongodb");
 const multer = require("multer");
+const nodemailer = require("nodemailer");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -119,25 +120,17 @@ app.get("/match", upload.none(), async function (req, res) {
 });
 
 app.get("/match/contact", upload.none(), async function (req, res) {
-  var info = await getContactInfo(req.query.appNo);
-  if (info === null) {
-    res.writeHead(404, {
-      "Content-Type": "text/plain",
-    });
-    res.write("No Info found");
-    res.end();
-  } else {
-    res.writeHead(200, {
-      "Content-Type": "json",
-    });
-    res.write(JSON.stringify(info));
-    res.end();
-  }
+  await contactMatch(req.query.appNo);
 });
+
+//Server Constants
+var appUser = null;
 
 // Client Setup
 const uri =
-  "mongodb+srv://admin:admin@cluster0.ujdx5.mongodb.net/GUC?retryWrites=true&w=majority";
+  "mongodb+srv://admin:" +
+  process.env.DB_PASS +
+  "@cluster0.ujdx5.mongodb.net/GUC?retryWrites=true&w=majority";
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -157,6 +150,7 @@ async function addUser(data) {
       .collection("students")
       .findOne({ appNo: data.appNo });
   }
+  appUser = user;
   return user;
 }
 
@@ -166,6 +160,7 @@ async function login(data) {
     .db("GUC")
     .collection("students")
     .findOne({ appNo: data.appNo, password: data.password });
+  appUser = found;
   return found;
 }
 
@@ -177,8 +172,14 @@ async function addRequest(data) {
 
 async function editRequest(data) {
   await client.connect();
-  await client.db("GUC").collection("requests").updateOne({appNo: data.appNo},{$set: data});
-  return await client.db("GUC").collection("requests").findOne({appNo: data.appNo});
+  await client
+    .db("GUC")
+    .collection("requests")
+    .updateOne({ appNo: data.appNo }, { $set: data });
+  return await client
+    .db("GUC")
+    .collection("requests")
+    .findOne({ appNo: data.appNo });
 }
 
 async function deleteRequest(appNo) {
@@ -215,16 +216,43 @@ async function getMatches(appNo) {
   return results;
 }
 
-async function getContactInfo(appNo) {
+//Mail Setup
+var transporter = nodemailer.createTransport({
+  service: "yahoo",
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+async function contactMatch() {
   await client.connect();
+
   var info = await client
     .db("GUC")
     .collection("students")
-    .findOne(
-      { appNo: appNo },
-      { projection: { name: 1, appNo: 1, phoneNo: 1, email: 1 } }
-    );
-  return info;
+    .findOne({ appNo: appNo }, { projection: { name: 1, email: 1 } });
+
+  var mailOptions = {
+    from: process.env.EMAIL,
+    to: info.email,
+    subject: "Switching Partner Found!",
+    html: (
+      <>
+        <h1>Hello {info.name}</h1>
+        <p>We found you a switching partner</p>
+        <br />
+        <p>
+          Name: {appUser.name}, Mobile Number: {appUser.phoneNo}, email:{" "}
+          {appUser.email}
+        </p>
+        <br />
+        <p>Give them a call to confirm the switch</p>
+      </>
+    ),
+  };
+
+  transporter.sendMail(mailOptions);
 }
 
 app.listen(process.env.PORT || 8080);
