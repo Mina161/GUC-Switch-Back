@@ -98,14 +98,8 @@ app.delete("/request", upload.none(), async function (req, res) {
 
 app.get("/match", upload.none(), async function (req, res) {
   var results = await getMatches(req.query.appNo);
-  if (results === []) {
-    res.writeHead(404, {
-      "Content-Type": "text/plain",
-    });
-    res.write("No Matches");
-    res.end();
-  } else if (results === "No Request Found") {
-    res.writeHead(404, {
+  if (results === "No Request Found") {
+    res.writeHead(500, {
       "Content-Type": "json",
     });
     res.write("You did not submit any requests");
@@ -205,6 +199,8 @@ async function getMatches(appNo) {
     .collection("requests")
     .findOne({ appNo: appNo });
 
+  if (myRequest === null) return "No Request Found"
+
   const query = {
     major: myRequest.major,
     semester: myRequest.semester,
@@ -218,6 +214,7 @@ async function getMatches(appNo) {
     .collection("requests")
     .find(query)
     .toArray();
+    
   return results;
 }
 
