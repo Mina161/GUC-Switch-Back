@@ -62,9 +62,9 @@ app.get("/request", upload.none(), async function (req, res) {
     res.end();
   } else {
     res.writeHead(200, {
-      "Content-Type": "text/plain",
+      "Content-Type": "json",
     });
-    res.write(result);
+    res.write(JSON.stringify(result));
     res.end();
   }
 });
@@ -72,18 +72,18 @@ app.get("/request", upload.none(), async function (req, res) {
 app.post("/request", upload.none(), async function (req, res) {
   var result = await addRequest(req.body);
   res.writeHead(200, {
-    "Content-Type": "text/plain",
+    "Content-Type": "json",
   });
-  res.write(result);
+  res.write(JSON.stringify(result));
   res.end();
 });
 
 app.put("/request", upload.none(), async function (req, res) {
   var result = await editRequest(req.body);
   res.writeHead(200, {
-    "Content-Type": "text/plain",
+    "Content-Type": "json",
   });
-  res.write(result);
+  res.write(JSON.stringify(result));
   res.end();
 });
 
@@ -188,7 +188,8 @@ async function deleteRequest(appNo) {
 
 async function getRequest(appNo) {
   await client.connect();
-  return await client.db("GUC").collection("requests").findOne({appNo: appNo});
+  let result = await client.db("GUC").collection("requests").findOne({appNo: appNo});
+  return result
 }
 
 async function getMatches(appNo,limit,page) {
