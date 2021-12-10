@@ -188,7 +188,7 @@ async function deleteRequest(appNo) {
 
 async function getRequest(appNo) {
   await client.connect();
-  return await client.db("GUC").collection("requests").findOne(appNo);
+  return await client.db("GUC").collection("requests").findOne({appNo: appNo});
 }
 
 async function getMatches(appNo,limit,page) {
