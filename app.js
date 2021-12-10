@@ -127,8 +127,8 @@ var appUser = null;
 
 // Client Setup
 const uri =
-  "mongodb+srv://admin:" +
-  process.env.DB_PASS +
+  "mongodb+srv://admin:admin" +
+  // process.env.DB_PASS +
   "@cluster0.ujdx5.mongodb.net/GUC?retryWrites=true&w=majority";
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -213,8 +213,8 @@ async function getMatches(appNo,limit,page) {
     .db("GUC")
     .collection("requests")
     .find(query)
-    .skip(limit*(page-1))
-    .limit(limit)
+    .skip(parseInt(limit)*(parseInt(page)-1))
+    .limit(parseInt(limit))
     .toArray();
 
   return {results: results, limit: limit, thisPage: page};
