@@ -97,7 +97,7 @@ app.delete("/request", upload.none(), async function (req, res) {
 });
 
 app.get("/match", upload.none(), async function (req, res) {
-  var results = await getMatches(req.query.appNo);
+  var results = await getMatches(req.query.appNo, req.query.limit, req.query.page);
   if (results === "No Request Found") {
     res.writeHead(500, {
       "Content-Type": "json",
