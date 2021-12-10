@@ -127,8 +127,8 @@ var appUser = null;
 
 // Client Setup
 const uri =
-  "mongodb+srv://admin:admin" +
-  // process.env.DB_PASS +
+  "mongodb+srv://admin:" +
+  process.env.DB_PASS +
   "@cluster0.ujdx5.mongodb.net/GUC?retryWrites=true&w=majority";
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
