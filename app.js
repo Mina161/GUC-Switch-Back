@@ -191,7 +191,7 @@ async function getRequest(appNo) {
   return await client.db("GUC").collection("requests").findOne(appNo);
 }
 
-async function getMatches(appNo) {
+async function getMatches(appNo,limit,page) {
   await client.connect();
 
   var myRequest = await client
@@ -213,9 +213,11 @@ async function getMatches(appNo) {
     .db("GUC")
     .collection("requests")
     .find(query)
+    .skip(pagesize*(n-1))
+    .limit(pagesize)
     .toArray();
-    
-  return results;
+
+  return {results: results, limit: limit, thisPage: page};
 }
 
 //Mail Setup
