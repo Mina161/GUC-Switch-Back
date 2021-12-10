@@ -213,8 +213,8 @@ async function getMatches(appNo,limit,page) {
     .db("GUC")
     .collection("requests")
     .find(query)
-    .skip(pagesize*(n-1))
-    .limit(pagesize)
+    .skip(limit*(page-1))
+    .limit(limit)
     .toArray();
 
   return {results: results, limit: limit, thisPage: page};
