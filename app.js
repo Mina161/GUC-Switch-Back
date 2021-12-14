@@ -24,7 +24,7 @@ app.post("/login", upload.none(), async function (req, res) {
     res.writeHead(404, {
       "Content-Type": "text/plain",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": "Content-Type"
+      "Access-Control-Allow-Headers": process.env.HEADERS
     });
     res.write("User not found");
     res.end();
@@ -32,7 +32,7 @@ app.post("/login", upload.none(), async function (req, res) {
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": "Content-Type"
+      "Access-Control-Allow-Headers": process.env.HEADERS
     });
     res.write(JSON.stringify(found));
     res.end();
@@ -45,7 +45,7 @@ app.post("/signup", upload.none(), async function (req, res) {
     res.writeHead(500, {
       "Content-Type": "text/plain",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": "Content-Type"
+      "Access-Control-Allow-Headers": process.env.HEADERS
     });
     res.write("User found before");
     res.end();
@@ -53,7 +53,7 @@ app.post("/signup", upload.none(), async function (req, res) {
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": "Content-Type"
+      "Access-Control-Allow-Headers": process.env.HEADERS
     });
     res.write(JSON.stringify(found));
     res.end();
@@ -66,7 +66,7 @@ app.get("/request", upload.none(), async function (req, res) {
     res.writeHead(404, {
       "Content-Type": "text/plain",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": "Content-Type"
+      "Access-Control-Allow-Headers": process.env.HEADERS
     });
     res.write("No Requests Found");
     res.end();
@@ -74,7 +74,7 @@ app.get("/request", upload.none(), async function (req, res) {
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": "Content-Type"
+      "Access-Control-Allow-Headers": process.env.HEADERS
     });
     res.write(JSON.stringify(result));
     res.end();
@@ -86,7 +86,7 @@ app.post("/request", upload.none(), async function (req, res) {
   res.writeHead(200, {
     "Content-Type": "json",
     "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": "Content-Type"
+    "Access-Control-Allow-Headers": process.env.HEADERS
   });
   res.write(JSON.stringify(result));
   res.end();
@@ -97,7 +97,7 @@ app.put("/request", upload.none(), async function (req, res) {
   res.writeHead(200, {
     "Content-Type": "json",
     "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": "Content-Type"
+    "Access-Control-Allow-Headers": process.env.HEADERS
   });
   res.write(JSON.stringify(result));
   res.end();
@@ -108,7 +108,7 @@ app.delete("/request", upload.none(), async function (req, res) {
   res.writeHead(200, {
     "Content-Type": "text/plain",
     "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": "Content-Type"
+    "Access-Control-Allow-Headers": process.env.HEADERS
   });
   res.write("Request Deleted Successfully");
   res.end();
@@ -120,7 +120,7 @@ app.get("/match", upload.none(), async function (req, res) {
     res.writeHead(500, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": "Content-Type"
+      "Access-Control-Allow-Headers": process.env.HEADERS
     });
     res.write("You did not submit any requests");
     res.end();
@@ -128,7 +128,7 @@ app.get("/match", upload.none(), async function (req, res) {
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": "Content-Type"
+      "Access-Control-Allow-Headers": process.env.HEADERS
     });
     res.write(JSON.stringify(results));
     res.end();
@@ -140,7 +140,7 @@ app.get("/match/contact", upload.none(), async function (req, res) {
   res.writeHead(200, {
     "Content-Type": "text/plain",
     "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": "Content-Type"
+    "Access-Control-Allow-Headers": process.env.HEADERS
   });
   res.write("Mail Sent!");
   res.end();
