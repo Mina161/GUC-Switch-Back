@@ -23,14 +23,14 @@ app.post("/login", upload.none(), async function (req, res) {
   if (found === null) {
     res.writeHead(404, {
       "Content-Type": "text/plain",
-      "Access-Control-Allow-Origin": "https://tutorial-switching.herokuapp.com/"
+      "Access-Control-Allow-Origin": process.env.ORIGIN
     });
     res.write("User not found");
     res.end();
   } else {
     res.writeHead(200, {
       "Content-Type": "json",
-      "Access-Control-Allow-Origin": "https://tutorial-switching.herokuapp.com/"
+      "Access-Control-Allow-Origin": process.env.ORIGIN
     });
     res.write(JSON.stringify(found));
     res.end();
@@ -42,14 +42,14 @@ app.post("/signup", upload.none(), async function (req, res) {
   if (found === null) {
     res.writeHead(500, {
       "Content-Type": "text/plain",
-      "Access-Control-Allow-Origin": "https://tutorial-switching.herokuapp.com/"
+      "Access-Control-Allow-Origin": process.env.ORIGIN
     });
     res.write("User found before");
     res.end();
   } else {
     res.writeHead(200, {
       "Content-Type": "json",
-      "Access-Control-Allow-Origin": "https://tutorial-switching.herokuapp.com/"
+      "Access-Control-Allow-Origin": process.env.ORIGIN
     });
     res.write(JSON.stringify(found));
     res.end();
@@ -61,14 +61,14 @@ app.get("/request", upload.none(), async function (req, res) {
   if (result === null) {
     res.writeHead(404, {
       "Content-Type": "text/plain",
-      "Access-Control-Allow-Origin": "https://tutorial-switching.herokuapp.com/"
+      "Access-Control-Allow-Origin": process.env.ORIGIN
     });
     res.write("No Requests Found");
     res.end();
   } else {
     res.writeHead(200, {
       "Content-Type": "json",
-      "Access-Control-Allow-Origin": "https://tutorial-switching.herokuapp.com/"
+      "Access-Control-Allow-Origin": process.env.ORIGIN
     });
     res.write(JSON.stringify(result));
     res.end();
@@ -79,7 +79,7 @@ app.post("/request", upload.none(), async function (req, res) {
   var result = await addRequest(req.body);
   res.writeHead(200, {
     "Content-Type": "json",
-    "Access-Control-Allow-Origin": "https://tutorial-switching.herokuapp.com/"
+    "Access-Control-Allow-Origin": process.env.ORIGIN
   });
   res.write(JSON.stringify(result));
   res.end();
@@ -89,7 +89,7 @@ app.put("/request", upload.none(), async function (req, res) {
   var result = await editRequest(req.body);
   res.writeHead(200, {
     "Content-Type": "json",
-    "Access-Control-Allow-Origin": "https://tutorial-switching.herokuapp.com/"
+    "Access-Control-Allow-Origin": process.env.ORIGIN
   });
   res.write(JSON.stringify(result));
   res.end();
@@ -99,7 +99,7 @@ app.delete("/request", upload.none(), async function (req, res) {
   await deleteRequest(req.query.appNo);
   res.writeHead(200, {
     "Content-Type": "text/plain",
-    "Access-Control-Allow-Origin": "https://tutorial-switching.herokuapp.com/"
+    "Access-Control-Allow-Origin": process.env.ORIGIN
   });
   res.write("Request Deleted Successfully");
   res.end();
@@ -110,14 +110,14 @@ app.get("/match", upload.none(), async function (req, res) {
   if (results === "No Request Found") {
     res.writeHead(500, {
       "Content-Type": "json",
-      "Access-Control-Allow-Origin": "https://tutorial-switching.herokuapp.com/"
+      "Access-Control-Allow-Origin": process.env.ORIGIN
     });
     res.write("You did not submit any requests");
     res.end();
   } else {
     res.writeHead(200, {
       "Content-Type": "json",
-      "Access-Control-Allow-Origin": "https://tutorial-switching.herokuapp.com/"
+      "Access-Control-Allow-Origin": process.env.ORIGIN
     });
     res.write(JSON.stringify(results));
     res.end();
@@ -128,7 +128,7 @@ app.get("/match/contact", upload.none(), async function (req, res) {
   await contactMatch(req.query.sender,req.query.receiver);
   res.writeHead(200, {
     "Content-Type": "text/plain",
-    "Access-Control-Allow-Origin": "https://tutorial-switching.herokuapp.com/"
+    "Access-Control-Allow-Origin": process.env.ORIGIN
   });
   res.write("Mail Sent!");
   res.end();
