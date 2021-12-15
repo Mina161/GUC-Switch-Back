@@ -243,13 +243,13 @@ async function getMatches(appNo, limit, page) {
   };
 
   var allResults = await client.db("GUC").collection("requests").find(query);
+  
+  var count = await allResults.count()
 
   var results = await allResults
     .skip(parseInt(limit) * (parseInt(page) - 1))
     .limit(parseInt(limit))
     .toArray();
-  
-  var count = await allResults.count()
 
   return {
     results: results,
