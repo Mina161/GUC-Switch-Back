@@ -244,12 +244,17 @@ async function getMatches(appNo, limit, page) {
 
   var allResults = await client.db("GUC").collection("requests").find(query);
 
-  var results = allResults
+  var results = await allResults
     .skip(parseInt(limit) * (parseInt(page) - 1))
     .limit(parseInt(limit))
     .toArray();
 
-  return { results: results, limit: limit, thisPage: page, count: (await allResults.toArray()).length };
+  return {
+    results: results,
+    limit: limit,
+    thisPage: page,
+    count: (await allResults.toArray()).length,
+  };
 }
 
 //Mail Setup
