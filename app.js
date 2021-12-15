@@ -248,12 +248,14 @@ async function getMatches(appNo, limit, page) {
     .skip(parseInt(limit) * (parseInt(page) - 1))
     .limit(parseInt(limit))
     .toArray();
+  
+  var count = await allResults.toArray().length
 
   return {
     results: results,
     limit: limit,
     thisPage: page,
-    count: await allResults.toArray().length,
+    count: count
   };
 }
 
