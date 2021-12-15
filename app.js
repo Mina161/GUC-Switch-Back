@@ -1,4 +1,5 @@
 var express = require("express");
+var cors = require('cors')
 var path = require("path");
 var app = express();
 const { MongoClient } = require("mongodb");
@@ -13,6 +14,7 @@ const upload = multer();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cors())
 
 app.get("/", function (req, res) {
   res.render("index", { title: "GUC Switch Server" });
@@ -63,7 +65,7 @@ app.post("/signup", upload.none(), async function (req, res) {
 app.get("/request", upload.none(), async function (req, res) {
   var result = await getRequest(req.query.appNo);
   if (result === null) {
-    res.writeHead(404, {
+    res.writeHead(200, {
       "Content-Type": "text/plain",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
       "Access-Control-Allow-Headers": process.env.HEADERS,
@@ -121,7 +123,7 @@ app.get("/match", upload.none(), async function (req, res) {
     req.query.page
   );
   if (results === "No Request Found") {
-    res.writeHead(500, {
+    res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
       "Access-Control-Allow-Headers": process.env.HEADERS,
