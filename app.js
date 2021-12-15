@@ -24,7 +24,7 @@ app.post("/login", upload.none(), async function (req, res) {
     res.writeHead(404, {
       "Content-Type": "text/plain",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS
+      "Access-Control-Allow-Headers": process.env.HEADERS,
     });
     res.write("User not found");
     res.end();
@@ -32,7 +32,7 @@ app.post("/login", upload.none(), async function (req, res) {
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS
+      "Access-Control-Allow-Headers": process.env.HEADERS,
     });
     res.write(JSON.stringify(found));
     res.end();
@@ -45,7 +45,7 @@ app.post("/signup", upload.none(), async function (req, res) {
     res.writeHead(500, {
       "Content-Type": "text/plain",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS
+      "Access-Control-Allow-Headers": process.env.HEADERS,
     });
     res.write("User found before");
     res.end();
@@ -53,7 +53,7 @@ app.post("/signup", upload.none(), async function (req, res) {
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS
+      "Access-Control-Allow-Headers": process.env.HEADERS,
     });
     res.write(JSON.stringify(found));
     res.end();
@@ -66,7 +66,7 @@ app.get("/request", upload.none(), async function (req, res) {
     res.writeHead(404, {
       "Content-Type": "text/plain",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS
+      "Access-Control-Allow-Headers": process.env.HEADERS,
     });
     res.write("No Requests Found");
     res.end();
@@ -74,7 +74,7 @@ app.get("/request", upload.none(), async function (req, res) {
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS
+      "Access-Control-Allow-Headers": process.env.HEADERS,
     });
     res.write(JSON.stringify(result));
     res.end();
@@ -86,7 +86,7 @@ app.post("/request", upload.none(), async function (req, res) {
   res.writeHead(200, {
     "Content-Type": "json",
     "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": process.env.HEADERS
+    "Access-Control-Allow-Headers": process.env.HEADERS,
   });
   res.write(JSON.stringify(result));
   res.end();
@@ -97,7 +97,7 @@ app.put("/request", upload.none(), async function (req, res) {
   res.writeHead(200, {
     "Content-Type": "json",
     "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": process.env.HEADERS
+    "Access-Control-Allow-Headers": process.env.HEADERS,
   });
   res.write(JSON.stringify(result));
   res.end();
@@ -108,19 +108,23 @@ app.delete("/request", upload.none(), async function (req, res) {
   res.writeHead(200, {
     "Content-Type": "text/plain",
     "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": process.env.HEADERS
+    "Access-Control-Allow-Headers": process.env.HEADERS,
   });
   res.write("Request Deleted Successfully");
   res.end();
 });
 
 app.get("/match", upload.none(), async function (req, res) {
-  var results = await getMatches(req.query.appNo, req.query.limit, req.query.page);
+  var results = await getMatches(
+    req.query.appNo,
+    req.query.limit,
+    req.query.page
+  );
   if (results === "No Request Found") {
     res.writeHead(500, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS
+      "Access-Control-Allow-Headers": process.env.HEADERS,
     });
     res.write("You did not submit any requests");
     res.end();
@@ -128,7 +132,7 @@ app.get("/match", upload.none(), async function (req, res) {
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS
+      "Access-Control-Allow-Headers": process.env.HEADERS,
     });
     res.write(JSON.stringify(results));
     res.end();
@@ -136,11 +140,11 @@ app.get("/match", upload.none(), async function (req, res) {
 });
 
 app.get("/match/contact", upload.none(), async function (req, res) {
-  await contactMatch(req.query.sender,req.query.receiver);
+  await contactMatch(req.query.sender, req.query.receiver);
   res.writeHead(200, {
     "Content-Type": "text/plain",
     "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": process.env.HEADERS
+    "Access-Control-Allow-Headers": process.env.HEADERS,
   });
   res.write("Mail Sent!");
   res.end();
@@ -212,11 +216,14 @@ async function deleteRequest(appNo) {
 
 async function getRequest(appNo) {
   await client.connect();
-  let result = await client.db("GUC").collection("requests").findOne({appNo: appNo});
-  return result
+  let result = await client
+    .db("GUC")
+    .collection("requests")
+    .findOne({ appNo: appNo });
+  return result;
 }
 
-async function getMatches(appNo,limit,page) {
+async function getMatches(appNo, limit, page) {
   await client.connect();
 
   var myRequest = await client
@@ -224,7 +231,7 @@ async function getMatches(appNo,limit,page) {
     .collection("requests")
     .findOne({ appNo: appNo });
 
-  if (myRequest === null) return "No Request Found"
+  if (myRequest === null) return "No Request Found";
 
   const query = {
     major: myRequest.major,
@@ -234,15 +241,15 @@ async function getMatches(appNo,limit,page) {
     englishLevel: myRequest.englishLevel,
     goTo: myRequest.tutNo,
   };
-  var results = await client
-    .db("GUC")
-    .collection("requests")
-    .find(query)
-    .skip(parseInt(limit)*(parseInt(page)-1))
+
+  var allResults = await client.db("GUC").collection("requests").find(query);
+
+  var results = allResults
+    .skip(parseInt(limit) * (parseInt(page) - 1))
     .limit(parseInt(limit))
     .toArray();
 
-  return {results: results, limit: limit, thisPage: page};
+  return { results: results, limit: limit, thisPage: page, count: (await allResults.toArray()).length };
 }
 
 //Mail Setup
@@ -254,12 +261,12 @@ var transporter = nodemailer.createTransport({
   },
 });
 
-async function contactMatch(sender,receiver) {
+async function contactMatch(sender, receiver) {
   await client.connect();
   var appUser = await client
-  .db("GUC")
-  .collection("students")
-  .findOne({ appNo: sender });
+    .db("GUC")
+    .collection("students")
+    .findOne({ appNo: sender });
 
   var info = await client
     .db("GUC")
@@ -270,7 +277,16 @@ async function contactMatch(sender,receiver) {
     from: process.env.EMAIL,
     to: info.email,
     subject: "Switching Partner Found!",
-    html: '<h1>Hello '+info.name+'</h1><p>We found you a switching partner</p><br /><p>Name: '+appUser.name+', Mobile Number: '+appUser.phoneNo+', email: '+appUser.email+'</p><br /><p>Give them a call to confirm the switch</p>',
+    html:
+      "<h1>Hello " +
+      info.name +
+      "</h1><p>We found you a switching partner</p><br /><p>Name: " +
+      appUser.name +
+      ", Mobile Number: " +
+      appUser.phoneNo +
+      ", email: " +
+      appUser.email +
+      "</p><br /><p>Give them a call to confirm the switch</p>",
   };
 
   await transporter.sendMail(mailOptions);
