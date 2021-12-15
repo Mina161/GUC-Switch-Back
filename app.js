@@ -253,7 +253,7 @@ async function getMatches(appNo, limit, page) {
     results: results,
     limit: limit,
     thisPage: page,
-    count: (await allResults.toArray()).length,
+    count: await allResults.toArray().length,
   };
 }
 
