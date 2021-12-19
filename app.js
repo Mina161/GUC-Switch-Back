@@ -64,15 +64,6 @@ app.post("/signup", upload.none(), async function (req, res) {
 
 app.get("/request", upload.none(), async function (req, res) {
   var result = await getRequest(req.query.appNo);
-  if (result === null) {
-    res.writeHead(200, {
-      "Content-Type": "text/plain",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
-    res.write(JSON.stringify([]));
-    res.end();
-  } else {
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
@@ -80,7 +71,6 @@ app.get("/request", upload.none(), async function (req, res) {
     });
     res.write(JSON.stringify(result));
     res.end();
-  }
 });
 
 app.post("/request", upload.none(), async function (req, res) {
