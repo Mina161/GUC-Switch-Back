@@ -128,7 +128,7 @@ app.get("/match", upload.none(), async function (req, res) {
       "Access-Control-Allow-Origin": process.env.ORIGIN,
       "Access-Control-Allow-Headers": process.env.HEADERS,
     });
-    res.write("You did not submit any requests");
+    res.write([]);
     res.end();
   } else {
     res.writeHead(200, {
