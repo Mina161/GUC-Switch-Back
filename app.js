@@ -70,7 +70,7 @@ app.get("/request", upload.none(), async function (req, res) {
       "Access-Control-Allow-Origin": process.env.ORIGIN,
       "Access-Control-Allow-Headers": process.env.HEADERS,
     });
-    res.write("No Requests Found");
+    res.write([]);
     res.end();
   } else {
     res.writeHead(200, {
@@ -128,7 +128,7 @@ app.get("/match", upload.none(), async function (req, res) {
       "Access-Control-Allow-Origin": process.env.ORIGIN,
       "Access-Control-Allow-Headers": process.env.HEADERS,
     });
-    res.write([]);
+    res.write("You did not submit any requests");
     res.end();
   } else {
     res.writeHead(200, {
