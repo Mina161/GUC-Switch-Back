@@ -142,9 +142,6 @@ app.get("/match/contact", upload.none(), async function (req, res) {
   res.end();
 });
 
-//Server Constants
-var appUser = null;
-
 // Client Setup
 const uri =
   "mongodb+srv://admin:" +
@@ -169,7 +166,6 @@ async function addUser(data) {
       .collection("students")
       .findOne({ appNo: data.appNo });
   }
-  appUser = user;
   return user;
 }
 
@@ -179,7 +175,6 @@ async function login(data) {
     .db("GUC")
     .collection("students")
     .findOne({ appNo: data.appNo, password: data.password });
-  appUser = found;
   return found;
 }
 
