@@ -240,8 +240,8 @@ async function getMatches(appNo, limit, page) {
 
   return {
     results: results,
-    limit: limit,
-    thisPage: page,
+    limit: parseInt(limit),
+    thisPage: parseInt(page),
     count: count
   };
 }
