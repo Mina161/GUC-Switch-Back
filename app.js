@@ -302,7 +302,7 @@ async function contactMatch(sender, receiver) {
 async function updateSome(data) {
   await client.connect();
   if(data.adminPass == process.env.ADMIN) {
-    var toUpdate = await client.db("GUC").collection("Students").find(data.filters).toArray()
+    var toUpdate = await client.db("GUC").collection("Students").find().toArray()
     console.log(toUpdate);
     toUpdate.forEach(person => {
       console.log(person);
