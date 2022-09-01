@@ -302,7 +302,8 @@ async function contactMatch(sender, receiver) {
 async function updateSome(data) {
   await client.connect();
   if(data.adminPass == process.env.ADMIN) {
-    client.db("GUC").collection("Students").updateMany({...data.filters},{$set: {password: bcrypt.hashSync(this.password, saltRounds)}})
+    var toUpdate = await client.db("GUC").collection("Students").find({...data.filters})
+    toUpdate.map(person => client.db("GUC").collection("Students").findOneAndUpdate({appNo: person.appNo},{...person, $set: {password: bcrypt.hashSync(person.password, saltRounds)} }))
     return "Done";
   } else return "Fail";
 }
