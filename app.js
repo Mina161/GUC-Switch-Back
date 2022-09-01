@@ -1,12 +1,12 @@
 var express = require("express");
 var cors = require('cors')
 var path = require("path");
-const Cryptr = require('cryptr');
+const bcrypt = require('bcrypt');
+const saltRounds = process.eventNames.SALT;
 var app = express();
 const { MongoClient } = require("mongodb");
 const multer = require("multer");
 const nodemailer = require("nodemailer");
-const cryptr = new Cryptr(process.env.KEY);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -159,7 +159,8 @@ async function addUser(data) {
     .collection("students")
     .findOne({ appNo: data.appNo });
   if (found === null) {
-    await client.db("GUC").collection("students").insertOne({password: cryptr.encrypt(data.password), ...data});
+    var hash = await bcrypt.hashSync(data.password, saltRounds);
+    await client.db("GUC").collection("students").insertOne({password: hash, ...data});
     user = await client
       .db("GUC")
       .collection("students")
@@ -170,10 +171,11 @@ async function addUser(data) {
 
 async function login(data) {
   await client.connect();
+  var hash = await bcrypt.hashSync(data.password, saltRounds);
   var found = await client
     .db("GUC")
     .collection("students")
-    .findOne({ appNo: data.appNo, password: cryptr.encrypt(data.password)});
+    .findOne({ appNo: data.appNo, password: hash});
   return found;
 }
 
