@@ -2,7 +2,7 @@ var express = require("express");
 var cors = require('cors')
 var path = require("path");
 const bcrypt = require('bcrypt');
-const saltRounds = process.env.SALT;
+const saltRounds = parseInt(process.env.SALT);
 var app = express();
 const { MongoClient } = require("mongodb");
 const multer = require("multer");
@@ -144,8 +144,8 @@ app.get("/match/contact", upload.none(), async function (req, res) {
   res.end();
 });
 
-app.get("/updateAll", async function (req, res) {
-  var result = await updateAll();
+app.get("/updateSome", async function (req, res) {
+  var result = await updateAll(req.body);
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
@@ -170,7 +170,7 @@ async function addUser(data) {
     .collection("students")
     .findOne({ appNo: data.appNo });
   if (found === null) {
-    var hash = await bcrypt.hashSync(data.password, saltRounds);
+    var hash = bcrypt.hashSync(data.password, saltRounds);
     await client.db("GUC").collection("students").insertOne({password: hash, ...data});
     user = await client
       .db("GUC")
@@ -182,7 +182,7 @@ async function addUser(data) {
 
 async function login(data) {
   await client.connect();
-  var hash = await bcrypt.hashSync(data.password, saltRounds);
+  var hash = bcrypt.hashSync(data.password, saltRounds);
   var found = await client
     .db("GUC")
     .collection("students")
@@ -299,9 +299,12 @@ async function contactMatch(sender, receiver) {
 }
 
 // Hash all passwords
-async function updateAll() {
+async function updateAll(data) {
   await client.connect();
-  await client.close();
+  if(data.adminPass === process.env.ADMIN) {
+    client.db("GUC").collection("Students").updateMany(...data.filters,{$set: {password: bcrypt.hashSync(password, saltRounds)}})
+    return "Done";
+  } else return "Fail";
 }
 app.listen(process.env.PORT || 8080);
 
