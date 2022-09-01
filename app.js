@@ -182,12 +182,12 @@ async function addUser(data) {
 
 async function login(data) {
   await client.connect();
-  var hash = bcrypt.hashSync(data.password, saltRounds);
   var found = await client
     .db("GUC")
     .collection("students")
-    .findOne({ appNo: data.appNo, password: hash});
-  return found;
+    .findOne({ appNo: data.appNo});
+  if(bcrypt.compareSync(data.password, found.password)) return found;
+  else return null
 }
 
 async function addRequest(data) {
@@ -301,7 +301,7 @@ async function contactMatch(sender, receiver) {
 // Hash all passwords
 async function updateAll(data) {
   await client.connect();
-  if(data.adminPass === process.env.ADMIN) {
+  if(data.adminPass == process.env.ADMIN) {
     client.db("GUC").collection("Students").updateMany({...data.filters},{$set: {password: bcrypt.hashSync(password, saltRounds)}})
     return "Done";
   } else return "Fail";
