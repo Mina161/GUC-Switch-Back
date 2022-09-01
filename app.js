@@ -305,7 +305,7 @@ async function updateSome(data) {
     var toUpdate = await client.db("GUC").collection("students").find().toArray()
     toUpdate.forEach(person => {
       var hash = bcrypt.hashSync(person.password, saltRounds);
-      client.db("GUC").collection("students").findOneAndUpdate({appNo: person.appNo},{...person, password: hash})
+      client.db("GUC").collection("students").findOneAndUpdate({appNo: person.appNo}, {$set: {...person, password: hash}})
     }
     )
     return "Done";
