@@ -2,7 +2,7 @@ var express = require("express");
 var cors = require('cors')
 var path = require("path");
 const bcrypt = require('bcrypt');
-const saltRounds = process.eventNames.SALT;
+const saltRounds = process.env.SALT;
 var app = express();
 const { MongoClient } = require("mongodb");
 const multer = require("multer");
@@ -142,6 +142,17 @@ app.get("/match/contact", upload.none(), async function (req, res) {
   });
   res.write("Mail Sent!");
   res.end();
+});
+
+app.get("/updateAll", async function (req, res) {
+  var result = await updateAll();
+    res.writeHead(200, {
+      "Content-Type": "json",
+      "Access-Control-Allow-Origin": process.env.ORIGIN,
+      "Access-Control-Allow-Headers": process.env.HEADERS,
+    });
+    res.write(JSON.stringify(result));
+    res.end();
 });
 
 // Client Setup
@@ -287,6 +298,11 @@ async function contactMatch(sender, receiver) {
   await transporter.sendMail(mailOptions);
 }
 
+// Hash all passwords
+async function updateAll() {
+  await client.connect();
+  await client.close();
+}
 app.listen(process.env.PORT || 8080);
 
 module.exports = app;
