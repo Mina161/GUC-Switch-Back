@@ -303,7 +303,7 @@ async function updateSome(data) {
   await client.connect();
   if(data.adminPass == process.env.ADMIN) {
     var toUpdate = await client.db("GUC").collection("Students").find(data.filters)
-    toUpdate.map(person => {
+    toUpdate.toArray().map(person => {
       console.log(person);
       client.db("GUC").collection("Students").findOneAndUpdate({appNo: person.appNo},{...person, password: bcrypt.hashSync(person.password, saltRounds)})
     }
