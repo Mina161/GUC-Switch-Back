@@ -303,9 +303,9 @@ async function updateSome(data) {
   await client.connect();
   if(data.adminPass == process.env.ADMIN) {
     var toUpdate = await client.db("GUC").collection("students").find().toArray()
-    console.log(toUpdate);
     toUpdate.forEach(person => {
-      client.db("GUC").collection("students").findOneAndUpdate({appNo: person.appNo},{...person, password: bcrypt.hashSync(person.password, saltRounds)})
+      var hash = bcrypt.hashSync(person.password, saltRounds);
+      client.db("GUC").collection("students").findOneAndUpdate({appNo: person.appNo},{...person, password: hash})
     }
     )
     return "Done";
