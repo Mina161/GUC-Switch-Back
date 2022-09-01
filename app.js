@@ -1,10 +1,12 @@
 var express = require("express");
 var cors = require('cors')
 var path = require("path");
+const Cryptr = require('cryptr');
 var app = express();
 const { MongoClient } = require("mongodb");
 const multer = require("multer");
 const nodemailer = require("nodemailer");
+const cryptr = new Cryptr(process.env.KEY);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -157,7 +159,7 @@ async function addUser(data) {
     .collection("students")
     .findOne({ appNo: data.appNo });
   if (found === null) {
-    await client.db("GUC").collection("students").insertOne(data);
+    await client.db("GUC").collection("students").insertOne({password: cryptr.encrypt(data.password), ...data});
     user = await client
       .db("GUC")
       .collection("students")
@@ -171,7 +173,7 @@ async function login(data) {
   var found = await client
     .db("GUC")
     .collection("students")
-    .findOne({ appNo: data.appNo, password: data.password });
+    .findOne({ appNo: data.appNo, password: cryptr.encrypt(data.password)});
   return found;
 }
 
