@@ -171,8 +171,7 @@ async function addUser(data) {
     .findOne({ appNo: data.appNo });
   if (found === null) {
     var hash = bcrypt.hashSync(data.password, saltRounds);
-    console.log(hash);
-    await client.db("GUC").collection("students").insertOne({password: hash, ...data});
+    await client.db("GUC").collection("students").insertOne({...data, password: hash});
     user = await client
       .db("GUC")
       .collection("students")
