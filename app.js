@@ -145,7 +145,7 @@ app.get("/match/contact", upload.none(), async function (req, res) {
 });
 
 app.get("/updateSome", async function (req, res) {
-  var result = await updateAll(req.body);
+  var result = await updateSome(req.body);
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
@@ -299,10 +299,10 @@ async function contactMatch(sender, receiver) {
 }
 
 // Hash all passwords
-async function updateAll(data) {
+async function updateSome(data) {
   await client.connect();
   if(data.adminPass == process.env.ADMIN) {
-    client.db("GUC").collection("Students").updateMany({...data.filters},{$set: {password: bcrypt.hashSync(password, saltRounds)}})
+    client.db("GUC").collection("Students").updateMany({...data.filters},{$set: {password: bcrypt.hashSync(this.password, saltRounds)}})
     return "Done";
   } else return "Fail";
 }
