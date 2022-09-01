@@ -143,10 +143,7 @@ app.get("/match/contact", upload.none(), async function (req, res) {
 });
 
 // Client Setup
-const uri =
-  "mongodb+srv://admin:" +
-  process.env.DB_PASS +
-  "@cluster0.ujdx5.mongodb.net/GUC?retryWrites=true&w=majority";
+const uri = process.env.DB_URI;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
