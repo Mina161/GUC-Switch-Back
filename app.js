@@ -302,8 +302,8 @@ async function contactMatch(sender, receiver) {
 async function updateSome(data) {
   await client.connect();
   if(data.adminPass == process.env.ADMIN) {
-    var toUpdate = await client.db("GUC").collection("Students").find(data.filters)
-    toUpdate.toArray().map(person => {
+    var toUpdate = await client.db("GUC").collection("Students").find(data.filters).toArray()
+    toUpdate.map(person => {
       console.log(person);
       client.db("GUC").collection("Students").findOneAndUpdate({appNo: person.appNo},{...person, password: bcrypt.hashSync(person.password, saltRounds)})
     }
