@@ -2,6 +2,7 @@ var express = require("express");
 var cors = require('cors')
 var path = require("path");
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const saltRounds = parseInt(process.env.SALT);
 var app = express();
 const { MongoClient } = require("mongodb");
@@ -144,14 +145,14 @@ app.get("/match/contact", upload.none(), async function (req, res) {
   res.end();
 });
 
-app.get("/updateSome", async function (req, res) {
-  var result = await updateSome(req.body);
+app.get("/generateReset", upload.none(), async function (req, res) {
+  await generatePasswordReset(req.query.appNo, req.query.email);
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
       "Access-Control-Allow-Headers": process.env.HEADERS,
     });
-    res.write(JSON.stringify(result));
+    res.write("Mail Sent!");
     res.end();
 });
 
@@ -298,19 +299,26 @@ async function contactMatch(sender, receiver) {
   await transporter.sendMail(mailOptions);
 }
 
-// Hash all passwords
-async function updateSome(data) {
+// Forgot Password Function
+async function generatePasswordReset(appNo, email) {
   await client.connect();
-  if(data.adminPass == process.env.ADMIN) {
-    var toUpdate = await client.db("GUC").collection("students").find().toArray()
-    toUpdate.forEach(person => {
-      var hash = bcrypt.hashSync(person.password, saltRounds);
-      client.db("GUC").collection("students").findOneAndUpdate({appNo: person.appNo}, {$set: {password: hash}})
-    }
-    )
-    return "Done";
-  } else return "Fail";
+  var ttl = new Date() + 10*60*1000;
+  var token = crypto.randomBytes(32).toString("hex");
+  client.db("GUC").collection("students").updateOne({appNo: appNo, email: email},{$set: {resetPassword: {token: token,TTL: ttl}}})
+  var mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "Password Reset Request",
+    html:
+      "<h1>Hello "+appNo+"!</h1>"+
+      "<p>Have you requested to reset your password? Follow this link and reset your password within 10 minutes</p><br/>"+
+      "<a href=\""+process.env.BASE+"password-reset?="+token+"\"><br/>"+
+      "<p>Not you? Ignore this email and secure your password"
+  };
+
+  await transporter.sendMail(mailOptions);
 }
+
 app.listen(process.env.PORT || 8080);
 
 module.exports = app;
