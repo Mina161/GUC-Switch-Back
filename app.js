@@ -322,7 +322,6 @@ async function contactMatch(sender, receiver) {
 // Forgot Password Functions
 async function generatePasswordReset(data) {
   await client.connect();
-  console.log(data);
   var ttl = new Date() + 10*60*1000;
   var token = crypto.randomBytes(32).toString("hex");
   var updated = await client.db("GUC").collection("students").updateOne({appNo: data.appNo, email: data.email},{$set: {token: token,TTL: ttl}})
@@ -342,8 +341,8 @@ async function generatePasswordReset(data) {
 
 async function resetPassword(data) {
   await client.connect();
-  var toReset = client.db("GUC").collection("students").findOne({appNo: data.appNo, email: data.email, token: data.token})
-  if(toReset != null && toReset.TTL > new Date()){
+  var toReset = await client.db("GUC").collection("students").findOne({appNo: data.appNo, email: data.email, token: data.token})
+  if(toReset != null && new Date(toReset.TTL) > new Date()){
     var hash = bcrypt.hashSync(data.password, saltRounds);
     client.db("GUC").collection("students").updateOne({appNo: data.appNo, email: data.email, token: data.token}, {$unset: {token, TTL}, $set: {password: hash}})
     return "Reset Done"
