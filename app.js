@@ -336,7 +336,7 @@ async function generatePasswordReset(data) {
       "<p>Not you? Ignore this email and secure your password"
   };
 
-  if(update != null) await transporter.sendMail(mailOptions);
+  if(updated != null) await transporter.sendMail(mailOptions);
 }
 
 async function resetPassword(data) {
