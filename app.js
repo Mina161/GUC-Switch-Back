@@ -145,14 +145,34 @@ app.get("/match/contact", upload.none(), async function (req, res) {
   res.end();
 });
 
-app.get("/generateReset", upload.none(), async function (req, res) {
-  await generatePasswordReset(req.query.appNo, req.query.email);
+app.get("/generateReset", async function (req, res) {
+  await generatePasswordReset(req.body);
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
       "Access-Control-Allow-Headers": process.env.HEADERS,
     });
-    res.write("Mail Sent!");
+    res.write("Request Sent!");
+    res.end();
+});
+
+app.post("/resetPassword", async function (req, res) {
+  var response = await resetPassword(req.body);
+    if(response != null) {
+    res.writeHead(200, {
+      "Content-Type": "json",
+      "Access-Control-Allow-Origin": process.env.ORIGIN,
+      "Access-Control-Allow-Headers": process.env.HEADERS,
+    });
+    res.write(response);
+  } else {
+    res.writeHead(504, {
+      "Content-Type": "json",
+      "Access-Control-Allow-Origin": process.env.ORIGIN,
+      "Access-Control-Allow-Headers": process.env.HEADERS,
+    });
+    res.write("Request Timed Out");
+  }
     res.end();
 });
 
@@ -299,24 +319,35 @@ async function contactMatch(sender, receiver) {
   await transporter.sendMail(mailOptions);
 }
 
-// Forgot Password Function
-async function generatePasswordReset(appNo, email) {
+// Forgot Password Functions
+async function generatePasswordReset(data) {
   await client.connect();
   var ttl = new Date() + 10*60*1000;
   var token = crypto.randomBytes(32).toString("hex");
-  client.db("GUC").collection("students").updateOne({appNo: appNo, email: email},{$set: {resetPassword: {token: token,TTL: ttl}}})
+  var updated = await client.db("GUC").collection("students").updateOne({appNo: data.appNo, email: data.email},{$set: {token: token,TTL: ttl}})
   var mailOptions = {
     from: process.env.EMAIL,
-    to: email,
+    to: data.email,
     subject: "Password Reset Request",
     html:
-      "<h1>Hello "+appNo+"!</h1>"+
+      "<h1>Hello "+data.appNo+"!</h1>"+
       "<p>Have you requested to reset your password? Follow this link and reset your password within 10 minutes</p><br/>"+
       "<a href=\""+process.env.BASE+"password-reset?="+token+"\"><br/>"+
       "<p>Not you? Ignore this email and secure your password"
   };
 
-  await transporter.sendMail(mailOptions);
+  if(update != null) await transporter.sendMail(mailOptions);
+}
+
+async function resetPassword(data) {
+  await client.connect();
+  var toReset = client.db("GUC").collection("students").findOne({appNo: data.appNo, email: data.email, token: data.token})
+  if(toReset != null && toReset.TTL > new Date()){
+    var hash = bcrypt.hashSync(data.password, saltRounds);
+    client.db("GUC").collection("students").updateOne({appNo: data.appNo, email: data.email, token: data.token}, {$unset: {token, TTL}, $set: {password: hash}})
+    return "Reset Done"
+  }
+  return null
 }
 
 app.listen(process.env.PORT || 8080);
