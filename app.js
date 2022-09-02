@@ -145,7 +145,7 @@ app.get("/match/contact", upload.none(), async function (req, res) {
   res.end();
 });
 
-app.get("/generateReset", async function (req, res) {
+app.get("/generateReset", upload.none(), async function (req, res) {
   await generatePasswordReset(req.body);
     res.writeHead(200, {
       "Content-Type": "json",
@@ -156,7 +156,7 @@ app.get("/generateReset", async function (req, res) {
     res.end();
 });
 
-app.post("/resetPassword", async function (req, res) {
+app.post("/resetPassword", upload.none(), async function (req, res) {
   var response = await resetPassword(req.body);
     if(response != null) {
     res.writeHead(200, {
