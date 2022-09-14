@@ -402,8 +402,8 @@ async function resetPassword(data) {
         token: data.token
       }, {
         $unset: {
-          token,
-          TTL
+          token: "",
+          TTL: ""
         },
         $set: {
           password: hash
