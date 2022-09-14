@@ -30,8 +30,8 @@ app.get("/", function (req, res) {
   });
 });
 
-app.get("/login", upload.none(), async function (req, res) {
-  var found = await login(req.query);
+app.post("/login", upload.none(), async function (req, res) {
+  var found = await login(req.body);
   if (found === null) {
     res.writeHead(404, {
       "Content-Type": "text/plain",
