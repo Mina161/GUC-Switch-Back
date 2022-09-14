@@ -3,9 +3,12 @@ var cors = require('cors')
 var path = require("path");
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+const moment = require('moment');
 const saltRounds = parseInt(process.env.SALT);
 var app = express();
-const { MongoClient } = require("mongodb");
+const {
+  MongoClient
+} = require("mongodb");
 const multer = require("multer");
 const nodemailer = require("nodemailer");
 
@@ -15,12 +18,16 @@ app.set("view engine", "ejs");
 
 const upload = multer();
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({
+  extended: false
+}));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors())
 
 app.get("/", function (req, res) {
-  res.render("index", { title: "GUC Switch Server" });
+  res.render("index", {
+    title: "GUC Switch Server"
+  });
 });
 
 app.get("/login", upload.none(), async function (req, res) {
@@ -67,13 +74,13 @@ app.post("/signup", upload.none(), async function (req, res) {
 
 app.get("/request", upload.none(), async function (req, res) {
   var result = await getRequest(req.query.appNo);
-    res.writeHead(200, {
-      "Content-Type": "json",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
-    res.write(JSON.stringify(result));
-    res.end();
+  res.writeHead(200, {
+    "Content-Type": "json",
+    "Access-Control-Allow-Origin": process.env.ORIGIN,
+    "Access-Control-Allow-Headers": process.env.HEADERS,
+  });
+  res.write(JSON.stringify(result));
+  res.end();
 });
 
 app.post("/request", upload.none(), async function (req, res) {
@@ -147,33 +154,33 @@ app.get("/match/contact", upload.none(), async function (req, res) {
 
 app.post("/generateReset", upload.none(), async function (req, res) {
   await generatePasswordReset(req.body);
-    res.writeHead(200, {
-      "Content-Type": "json",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
-    res.write("Request Sent!");
-    res.end();
+  res.writeHead(200, {
+    "Content-Type": "json",
+    "Access-Control-Allow-Origin": process.env.ORIGIN,
+    "Access-Control-Allow-Headers": process.env.HEADERS,
+  });
+  res.write("Request Sent!");
+  res.end();
 });
 
 app.post("/resetPassword", upload.none(), async function (req, res) {
   var response = await resetPassword(req.body);
-    if(response != null) {
+  if (response != "Reset Done") {
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
       "Access-Control-Allow-Headers": process.env.HEADERS,
     });
-    res.write(response);
   } else {
     res.writeHead(504, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
       "Access-Control-Allow-Headers": process.env.HEADERS,
     });
-    res.write("Request Timed Out");
+
   }
-    res.end();
+  res.write(response);
+  res.end();
 });
 
 // Client Setup
@@ -189,14 +196,21 @@ async function addUser(data) {
   var found = await client
     .db("GUC")
     .collection("students")
-    .findOne({ appNo: data.appNo });
+    .findOne({
+      appNo: data.appNo
+    });
   if (found === null) {
     var hash = bcrypt.hashSync(data.password, saltRounds);
-    await client.db("GUC").collection("students").insertOne({...data, password: hash});
+    await client.db("GUC").collection("students").insertOne({
+      ...data,
+      password: hash
+    });
     user = await client
       .db("GUC")
       .collection("students")
-      .findOne({ appNo: data.appNo });
+      .findOne({
+        appNo: data.appNo
+      });
   }
   return user;
 }
@@ -206,8 +220,10 @@ async function login(data) {
   var found = await client
     .db("GUC")
     .collection("students")
-    .findOne({ appNo: data.appNo});
-  if(bcrypt.compareSync(data.password, found.password)) return found;
+    .findOne({
+      appNo: data.appNo
+    });
+  if (bcrypt.compareSync(data.password, found.password)) return found;
   else return null
 }
 
@@ -222,16 +238,24 @@ async function editRequest(data) {
   await client
     .db("GUC")
     .collection("requests")
-    .updateOne({ appNo: data.appNo }, { $set: data });
+    .updateOne({
+      appNo: data.appNo
+    }, {
+      $set: data
+    });
   return await client
     .db("GUC")
     .collection("requests")
-    .findOne({ appNo: data.appNo });
+    .findOne({
+      appNo: data.appNo
+    });
 }
 
 async function deleteRequest(appNo) {
   await client.connect();
-  await client.db("GUC").collection("requests").deleteOne({ appNo: appNo });
+  await client.db("GUC").collection("requests").deleteOne({
+    appNo: appNo
+  });
 }
 
 async function getRequest(appNo) {
@@ -239,7 +263,9 @@ async function getRequest(appNo) {
   let result = await client
     .db("GUC")
     .collection("requests")
-    .findOne({ appNo: appNo });
+    .findOne({
+      appNo: appNo
+    });
   return result;
 }
 
@@ -249,21 +275,25 @@ async function getMatches(appNo, limit, page) {
   var myRequest = await client
     .db("GUC")
     .collection("requests")
-    .findOne({ appNo: appNo });
+    .findOne({
+      appNo: appNo
+    });
 
   if (myRequest === null) return "No Request Found";
 
   const query = {
     major: myRequest.major,
     semester: myRequest.semester,
-    tutNo: { $exists: myRequest.goTo },
+    tutNo: {
+      $exists: myRequest.goTo
+    },
     germanLevel: myRequest.germanLevel,
     englishLevel: myRequest.englishLevel,
     goTo: myRequest.tutNo,
   };
 
   var allResults = await client.db("GUC").collection("requests").find(query);
-  
+
   var count = await allResults.count()
 
   var results = await allResults
@@ -293,19 +323,27 @@ async function contactMatch(sender, receiver) {
   var appUser = await client
     .db("GUC")
     .collection("students")
-    .findOne({ appNo: sender });
+    .findOne({
+      appNo: sender
+    });
 
   var info = await client
     .db("GUC")
     .collection("students")
-    .findOne({ appNo: receiver }, { projection: { name: 1, email: 1 } });
+    .findOne({
+      appNo: receiver
+    }, {
+      projection: {
+        name: 1,
+        email: 1
+      }
+    });
 
   var mailOptions = {
     from: process.env.EMAIL,
     to: info.email,
     subject: "Switching Partner Found!",
-    html:
-      "<h1>Hello " +
+    html: "<h1>Hello " +
       info.name +
       "</h1><p>We found you a switching partner</p><br /><p>Name: " +
       appUser.name +
@@ -322,34 +360,62 @@ async function contactMatch(sender, receiver) {
 // Forgot Password Functions
 async function generatePasswordReset(data) {
   await client.connect();
-  var ttl = new Date() + 10*60*1000;
+  var ttl = moment().add(10,'minutes').toDate();
   var token = crypto.randomBytes(32).toString("hex");
-  var updated = await client.db("GUC").collection("students").updateOne({appNo: data.appNo, email: data.email},{$set: {token: token,TTL: ttl}})
+  var updated = await client.db("GUC").collection("students").updateOne({
+    appNo: data.appNo,
+    email: data.email
+  }, {
+    $set: {
+      token: token,
+      TTL: ttl
+    }
+  })
   var mailOptions = {
     from: process.env.EMAIL,
     to: data.email,
     subject: "Password Reset Request",
-    html:
-      "<h1>Hello "+data.appNo+"!</h1>"+
-      "<p>Have you requested to reset your password? Follow this link and reset your password within 10 minutes</p><br/>"+
-      "<a href=\""+process.env.BASE+"password-reset?="+token+"\">Click Here</a><br/>"+
+    html: "<h1>Hello " + data.appNo + "!</h1>" +
+      "<p>Have you requested to reset your password? Follow this link and reset your password within 10 minutes</p><br/>" +
+      "<a href=\"" + process.env.BASE + "password-reset?=" + token + "\">Click Here</a><br/>" +
       "<p>Not you? Ignore this email and secure your password</p>"
   };
 
-  if(updated != null) await transporter.sendMail(mailOptions);
+  if (updated != null) await transporter.sendMail(mailOptions);
 }
 
 async function resetPassword(data) {
   await client.connect();
-  var toReset = await client.db("GUC").collection("students").findOne({appNo: data.appNo, email: data.email, token: data.token})
-  expiry = toReset.TTL
-  today = new Date()
-  if(toReset != null && expiry > today){
-    var hash = bcrypt.hashSync(data.password, saltRounds);
-    client.db("GUC").collection("students").updateOne({appNo: data.appNo, email: data.email, token: data.token}, {$unset: {token, TTL}, $set: {password: hash}})
-    return "Reset Done"
+  var toReset = await client.db("GUC").collection("students").findOne({
+    appNo: data.appNo,
+    email: data.email,
+    token: data.token
+  })
+  expiry = moment(toReset.TTL)
+  today = moment()
+  if (toReset != null) {
+    if (expiry > today) {
+      var hash = bcrypt.hashSync(data.password, saltRounds);
+      client.db("GUC").collection("students").updateOne({
+        appNo: data.appNo,
+        email: data.email,
+        token: data.token
+      }, {
+        $unset: {
+          token,
+          TTL
+        },
+        $set: {
+          password: hash
+        }
+      })
+      return "Reset Done"
+    } else {
+      return "Token Expired"
+    }
+  } else {
+    return "Malformed Token"
   }
-  return null
 }
 
 app.listen(process.env.PORT || 8080);
