@@ -23,7 +23,7 @@ app.get("/", function (req, res) {
   res.render("index", { title: "GUC Switch Server" });
 });
 
-app.post("/login", upload.none(), async function (req, res) {
+app.get("/login", upload.none(), async function (req, res) {
   var found = await login(req.body);
   if (found === null) {
     res.writeHead(404, {
@@ -145,7 +145,7 @@ app.get("/match/contact", upload.none(), async function (req, res) {
   res.end();
 });
 
-app.get("/generateReset", upload.none(), async function (req, res) {
+app.post("/generateReset", upload.none(), async function (req, res) {
   await generatePasswordReset(req.body);
     res.writeHead(200, {
       "Content-Type": "json",
@@ -332,8 +332,8 @@ async function generatePasswordReset(data) {
     html:
       "<h1>Hello "+data.appNo+"!</h1>"+
       "<p>Have you requested to reset your password? Follow this link and reset your password within 10 minutes</p><br/>"+
-      "<a href=\""+process.env.BASE+"password-reset?="+token+"\"><br/>"+
-      "<p>Not you? Ignore this email and secure your password"
+      "<a href=\""+process.env.BASE+"password-reset?="+token+"\">Click Here</a><br/>"+
+      "<p>Not you? Ignore this email and secure your password</p>"
   };
 
   if(updated != null) await transporter.sendMail(mailOptions);
@@ -342,7 +342,9 @@ async function generatePasswordReset(data) {
 async function resetPassword(data) {
   await client.connect();
   var toReset = await client.db("GUC").collection("students").findOne({appNo: data.appNo, email: data.email, token: data.token})
-  if(toReset != null && new Date(toReset.TTL) > new Date()){
+  expiry = toReset.TTL
+  today = new Date()
+  if(toReset != null && expiry > today){
     var hash = bcrypt.hashSync(data.password, saltRounds);
     client.db("GUC").collection("students").updateOne({appNo: data.appNo, email: data.email, token: data.token}, {$unset: {token, TTL}, $set: {password: hash}})
     return "Reset Done"
