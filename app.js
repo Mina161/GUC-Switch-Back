@@ -31,7 +31,7 @@ app.get("/", function (req, res) {
 });
 
 app.get("/login", upload.none(), async function (req, res) {
-  var found = await login(req.body);
+  var found = await login(req.query);
   if (found === null) {
     res.writeHead(404, {
       "Content-Type": "text/plain",
