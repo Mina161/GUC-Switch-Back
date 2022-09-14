@@ -165,7 +165,7 @@ app.post("/generateReset", upload.none(), async function (req, res) {
 
 app.post("/resetPassword", upload.none(), async function (req, res) {
   var response = await resetPassword(req.body);
-  if (response != "Reset Done") {
+  if (response === "Reset Done") {
     res.writeHead(200, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
