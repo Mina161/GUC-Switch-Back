@@ -223,7 +223,7 @@ async function login(data) {
     .findOne({
       appNo: data.appNo
     });
-  if (bcrypt.compareSync(data.password, found.password)) return found;
+  if (found && bcrypt.compareSync(data.password, found.password)) return found;
   else return null
 }
 
@@ -391,9 +391,9 @@ async function resetPassword(data) {
     email: data.email,
     token: data.token
   })
-  expiry = moment(toReset.TTL)
-  today = moment()
   if (toReset != null) {
+    expiry = moment(toReset.TTL)
+    today = moment()
     if (expiry > today) {
       var hash = bcrypt.hashSync(data.password, saltRounds);
       client.db("GUC").collection("students").updateOne({
