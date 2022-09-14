@@ -377,7 +377,7 @@ async function generatePasswordReset(data) {
     subject: "Password Reset Request",
     html: "<h1>Hello " + data.appNo + "!</h1>" +
       "<p>Have you requested to reset your password? Follow this link and reset your password within 10 minutes</p><br/>" +
-      "<a href=\"" + process.env.BASE + "password-reset?=" + token + "\">Click Here</a><br/>" +
+      "<a href=\"" + process.env.BASE + "password-reset/?=" + token + "\">Click Here</a><br/>" +
       "<p>Not you? Ignore this email and secure your password</p>"
   };
 
