@@ -153,13 +153,13 @@ app.get("/match/contact", upload.none(), async function (req, res) {
 });
 
 app.post("/generateReset", upload.none(), async function (req, res) {
-  await generatePasswordReset(req.body);
+  var response = await generatePasswordReset(req.body);
   res.writeHead(200, {
     "Content-Type": "json",
     "Access-Control-Allow-Origin": process.env.ORIGIN,
     "Access-Control-Allow-Headers": process.env.HEADERS,
   });
-  res.write("Request Sent!");
+  res.write(response);
   res.end();
 });
 
@@ -360,28 +360,35 @@ async function contactMatch(sender, receiver) {
 // Forgot Password Functions
 async function generatePasswordReset(data) {
   await client.connect();
-  var ttl = moment().add(10,'minutes').toDate();
-  var token = crypto.randomBytes(32).toString("hex");
-  var updated = await client.db("GUC").collection("students").updateOne({
-    appNo: data.appNo,
-    email: data.email
-  }, {
-    $set: {
-      token: token,
-      TTL: ttl
-    }
-  })
-  var mailOptions = {
-    from: process.env.EMAIL,
-    to: data.email,
-    subject: "Password Reset Request",
-    html: "<h1>Hello " + data.appNo + "!</h1>" +
-      "<p>Have you requested to reset your password? Follow this link and reset your password within 10 minutes</p><br/>" +
-      "<a href=\"" + process.env.BASE + "reset-password/" + token + "\">Click Here</a><br/>" +
-      "<p>Not you? Ignore this email and secure your password</p>"
-  };
-
-  if (updated != null) await transporter.sendMail(mailOptions);
+  var alreadyRequested = await client.db("GUC").collection("students").findOne({appNo: data.appNo,
+    email: data.email}).token
+  if(!alreadyRequested){
+    var ttl = moment().add(10,'minutes').toDate();
+    var token = crypto.randomBytes(32).toString("hex");
+    var updated = await client.db("GUC").collection("students").updateOne({
+      appNo: data.appNo,
+      email: data.email
+    }, {
+      $set: {
+        token: token,
+        TTL: ttl
+      }
+    })
+    var mailOptions = {
+      from: process.env.EMAIL,
+      to: data.email,
+      subject: "Password Reset Request",
+      html: "<h1>Hello " + data.appNo + "!</h1>" +
+        "<p>Have you requested to reset your password? Follow this link and reset your password within 10 minutes</p><br/>" +
+        "<a href=\"" + process.env.BASE + "reset-password/" + token + "\">Click Here</a><br/>" +
+        "<p>Not you? Ignore this email and secure your password</p>"
+    };
+    if (updated != null){
+      await transporter.sendMail(mailOptions); 
+      return "Mail Sent!"
+    } else return "User-Email not found"
+  }
+  return "Already sent a mail"
 }
 
 async function resetPassword(data) {
