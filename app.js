@@ -360,8 +360,9 @@ async function contactMatch(sender, receiver) {
 // Forgot Password Functions
 async function generatePasswordReset(data) {
   await client.connect();
-  var alreadyRequested = await client.db("GUC").collection("students").findOne({appNo: data.appNo,
-    email: data.email}).token
+  var user = await client.db("GUC").collection("students").findOne({appNo: data.appNo,
+    email: data.email})
+  var alreadyRequested = user.token 
   if(!alreadyRequested){
     var ttl = moment().add(10,'minutes').toDate();
     var token = crypto.randomBytes(32).toString("hex");
@@ -374,16 +375,16 @@ async function generatePasswordReset(data) {
         TTL: ttl
       }
     })
-    var mailOptions = {
-      from: process.env.EMAIL,
-      to: data.email,
-      subject: "Password Reset Request",
-      html: "<h1>Hello " + data.appNo + "!</h1>" +
-        "<p>Have you requested to reset your password? Follow this link and reset your password within 10 minutes</p><br/>" +
-        "<a href=\"" + process.env.BASE + "reset-password/" + token + "\">Click Here</a><br/>" +
-        "<p>Not you? Ignore this email and secure your password</p>"
-    };
     if (updated){
+      var mailOptions = {
+        from: process.env.EMAIL,
+        to: updated.email,
+        subject: "Password Reset Request",
+        html: "<h1>Hello " + updated.appNo + "!</h1>" +
+          "<p>Have you requested to reset your password? Follow this link and reset your password within 10 minutes</p><br/>" +
+          "<a href=\"" + process.env.BASE + "reset-password/" + token + "\">Click Here</a><br/>" +
+          "<p>Not you? Ignore this email and secure your password</p>"
+      };
       await transporter.sendMail(mailOptions); 
       return "Mail Sent!"
     } else return "User-Email not found"
