@@ -362,7 +362,7 @@ async function generatePasswordReset(data) {
   await client.connect();
   var user = await client.db("GUC").collection("students").findOne({appNo: data.appNo,
     email: data.email})
-  var alreadyRequested = user.token 
+  var alreadyRequested = user?.token 
   if(!alreadyRequested){
     var ttl = moment().add(10,'minutes').toDate();
     var token = crypto.randomBytes(32).toString("hex");
