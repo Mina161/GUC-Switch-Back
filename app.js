@@ -375,12 +375,12 @@ async function generatePasswordReset(data) {
         TTL: ttl
       }
     })
-    if (updated){
+    if (updated != null){
       var mailOptions = {
         from: process.env.EMAIL,
-        to: updated.email,
+        to: updated?.email,
         subject: "Password Reset Request",
-        html: "<h1>Hello " + updated.appNo + "!</h1>" +
+        html: "<h1>Hello " + updated?.appNo + "!</h1>" +
           "<p>Have you requested to reset your password? Follow this link and reset your password within 10 minutes</p><br/>" +
           "<a href=\"" + process.env.BASE + "reset-password/" + token + "\">Click Here</a><br/>" +
           "<p>Not you? Ignore this email and secure your password</p>"
