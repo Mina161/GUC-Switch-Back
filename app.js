@@ -172,7 +172,7 @@ app.post("/resetPassword", upload.none(), async function (req, res) {
       "Access-Control-Allow-Headers": process.env.HEADERS,
     });
   } else {
-    res.writeHead(504, {
+    res.writeHead(400, {
       "Content-Type": "json",
       "Access-Control-Allow-Origin": process.env.ORIGIN,
       "Access-Control-Allow-Headers": process.env.HEADERS,
@@ -383,12 +383,12 @@ async function generatePasswordReset(data) {
         "<a href=\"" + process.env.BASE + "reset-password/" + token + "\">Click Here</a><br/>" +
         "<p>Not you? Ignore this email and secure your password</p>"
     };
-    if (updated != null){
+    if (updated){
       await transporter.sendMail(mailOptions); 
       return "Mail Sent!"
     } else return "User-Email not found"
   }
-  return "Already sent a mail"
+  return "Already sent a mail or user not found"
 }
 
 async function resetPassword(data) {
