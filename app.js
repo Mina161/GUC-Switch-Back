@@ -375,19 +375,20 @@ async function generatePasswordReset(data) {
         TTL: ttl
       }
     })
-    if (updated != null){
+    if (user){
       var mailOptions = {
         from: process.env.EMAIL,
-        to: updated?.email,
+        to: user?.email,
         subject: "Password Reset Request",
-        html: "<h1>Hello " + updated?.appNo + "!</h1>" +
+        html: "<h1>Hello " + user?.appNo + "!</h1>" +
           "<p>Have you requested to reset your password? Follow this link and reset your password within 10 minutes</p><br/>" +
           "<a href=\"" + process.env.BASE + "reset-password/" + token + "\">Click Here</a><br/>" +
           "<p>Not you? Ignore this email and secure your password</p>"
       };
       await transporter.sendMail(mailOptions); 
       return "Mail Sent!"
-    } else return "User-Email not found"
+    } else 
+      return "User-Email not found"
   }
   return "Already sent a mail or user not found"
 }
