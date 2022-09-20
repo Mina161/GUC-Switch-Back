@@ -154,12 +154,20 @@ app.get("/match/contact", upload.none(), async function (req, res) {
 
 app.post("/generateReset", upload.none(), async function (req, res) {
   var response = await generatePasswordReset(req.body);
-  res.writeHead(200, {
-    "Content-Type": "json",
-    "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": process.env.HEADERS,
-  });
-  res.write(response);
+  if (response === "Mail Sent!") {
+    res.writeHead(200, {
+      "Content-Type": "json",
+      "Access-Control-Allow-Origin": process.env.ORIGIN,
+      "Access-Control-Allow-Headers": process.env.HEADERS,
+    });
+  } else {
+    res.writeHead(400, {
+      "Content-Type": "json",
+      "Access-Control-Allow-Origin": process.env.ORIGIN,
+      "Access-Control-Allow-Headers": process.env.HEADERS,
+    });
+  }
+  res.write(response)
   res.end();
 });
 
