@@ -428,6 +428,16 @@ async function resetPassword(data) {
       })
       return "Reset Done"
     } else {
+      client.db("GUC").collection("students").updateOne({
+        appNo: data.appNo,
+        email: data.email,
+        token: data.token
+      }, {
+        $unset: {
+          token: "",
+          TTL: ""
+        }
+      })
       return "Token Expired"
     }
   } else {
