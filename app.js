@@ -31,164 +31,204 @@ app.get("/", function (req, res) {
 });
 
 app.post("/login", upload.none(), async function (req, res) {
-  var found = await login(req.body);
-  if (found === null) {
-    res.writeHead(404, {
-      "Content-Type": "text/plain",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
-    res.write("User not found");
-    res.end();
-  } else {
-    res.writeHead(200, {
-      "Content-Type": "json",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
-    res.write(JSON.stringify(found));
-    res.end();
+  try {
+    var found = await login(req.body);
+    if (found === null) {
+      res.writeHead(404, {
+        "Content-Type": "text/plain",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
+        "Access-Control-Allow-Headers": process.env.HEADERS,
+      });
+      res.write("User not found");
+      res.end();
+    } else {
+      res.writeHead(200, {
+        "Content-Type": "json",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
+        "Access-Control-Allow-Headers": process.env.HEADERS,
+      });
+      res.write(JSON.stringify(found));
+      res.end();
+    }
+  } catch(e) {
+    console.log(e);
   }
 });
 
 app.post("/signup", upload.none(), async function (req, res) {
-  var found = await addUser(req.body);
-  if (found === null) {
-    res.writeHead(500, {
-      "Content-Type": "text/plain",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
-    res.write("User found before");
-    res.end();
-  } else {
-    res.writeHead(200, {
-      "Content-Type": "json",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
-    res.write(JSON.stringify(found));
-    res.end();
+  try {
+    var found = await addUser(req.body);
+    if (found === null) {
+      res.writeHead(500, {
+        "Content-Type": "text/plain",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
+        "Access-Control-Allow-Headers": process.env.HEADERS,
+      });
+      res.write("User found before");
+      res.end();
+    } else {
+      res.writeHead(200, {
+        "Content-Type": "json",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
+        "Access-Control-Allow-Headers": process.env.HEADERS,
+      });
+      res.write(JSON.stringify(found));
+      res.end();
+    }
+  } catch(e) {
+    console.log(e);
   }
 });
 
 app.get("/request", upload.none(), async function (req, res) {
-  var result = await getRequest(req.query.appNo);
-  res.writeHead(200, {
-    "Content-Type": "json",
-    "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": process.env.HEADERS,
-  });
-  res.write(JSON.stringify(result));
-  res.end();
+  try {
+    var result = await getRequest(req.query.appNo);
+    res.writeHead(200, {
+      "Content-Type": "json",
+      "Access-Control-Allow-Origin": process.env.ORIGIN,
+      "Access-Control-Allow-Headers": process.env.HEADERS,
+    });
+    res.write(JSON.stringify(result));
+    res.end();
+  } catch(e) {
+    console.log(e);
+  }
 });
 
 app.post("/request", upload.none(), async function (req, res) {
-  var result = await addRequest(req.body);
-  res.writeHead(200, {
-    "Content-Type": "json",
-    "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": process.env.HEADERS,
-  });
-  res.write(JSON.stringify(result));
-  res.end();
+  try {
+    var result = await addRequest(req.body);
+    res.writeHead(200, {
+      "Content-Type": "json",
+      "Access-Control-Allow-Origin": process.env.ORIGIN,
+      "Access-Control-Allow-Headers": process.env.HEADERS,
+    });
+    res.write(JSON.stringify(result));
+    res.end();
+  } catch(e) {
+    console.log(e);
+  }
 });
 
 app.put("/request", upload.none(), async function (req, res) {
-  var result = await editRequest(req.body);
-  res.writeHead(200, {
-    "Content-Type": "json",
-    "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": process.env.HEADERS,
-  });
-  res.write(JSON.stringify(result));
-  res.end();
+  try {
+    var result = await editRequest(req.body);
+    res.writeHead(200, {
+      "Content-Type": "json",
+      "Access-Control-Allow-Origin": process.env.ORIGIN,
+      "Access-Control-Allow-Headers": process.env.HEADERS,
+    });
+    res.write(JSON.stringify(result));
+    res.end();
+  } catch(e) {
+    console.log(e);
+  }
 });
 
 app.delete("/request", upload.none(), async function (req, res) {
-  await deleteRequest(req.query.appNo);
-  res.writeHead(200, {
-    "Content-Type": "text/plain",
-    "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": process.env.HEADERS,
-  });
-  res.write("Request Deleted Successfully");
-  res.end();
+  try {
+    await deleteRequest(req.query.appNo);
+    res.writeHead(200, {
+      "Content-Type": "text/plain",
+      "Access-Control-Allow-Origin": process.env.ORIGIN,
+      "Access-Control-Allow-Headers": process.env.HEADERS,
+    });
+    res.write("Request Deleted Successfully");
+    res.end();
+  } catch(e) {
+    console.log(e);
+  }
 });
 
 app.get("/match", upload.none(), async function (req, res) {
-  var results = await getMatches(
-    req.query.appNo,
-    req.query.limit,
-    req.query.page
-  );
-  if (results === "No Request Found") {
-    res.writeHead(200, {
-      "Content-Type": "json",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
-    res.write("You did not submit any requests");
-    res.end();
-  } else {
-    res.writeHead(200, {
-      "Content-Type": "json",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
-    res.write(JSON.stringify(results));
-    res.end();
+  try {
+    var results = await getMatches(
+      req.query.appNo,
+      req.query.limit,
+      req.query.page
+    );
+    if (results === "No Request Found") {
+      res.writeHead(200, {
+        "Content-Type": "json",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
+        "Access-Control-Allow-Headers": process.env.HEADERS,
+      });
+      res.write("You did not submit any requests");
+      res.end();
+    } else {
+      res.writeHead(200, {
+        "Content-Type": "json",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
+        "Access-Control-Allow-Headers": process.env.HEADERS,
+      });
+      res.write(JSON.stringify(results));
+      res.end();
+    }
+  } catch(e) {
+    console.log(e);
   }
 });
 
 app.get("/match/contact", upload.none(), async function (req, res) {
-  await contactMatch(req.query.sender, req.query.receiver);
-  res.writeHead(200, {
-    "Content-Type": "text/plain",
-    "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Headers": process.env.HEADERS,
-  });
-  res.write("Mail Sent!");
-  res.end();
+  try {
+    await contactMatch(req.query.sender, req.query.receiver);
+    res.writeHead(200, {
+      "Content-Type": "text/plain",
+      "Access-Control-Allow-Origin": process.env.ORIGIN,
+      "Access-Control-Allow-Headers": process.env.HEADERS,
+    });
+    res.write("Mail Sent!");
+    res.end();
+  } catch(e) {
+    console.log(e);
+  }
 });
 
 app.post("/generateReset", upload.none(), async function (req, res) {
-  var response = await generatePasswordReset(req.body);
-  if (response === "Mail Sent!") {
-    res.writeHead(200, {
-      "Content-Type": "json",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
-  } else {
-    res.writeHead(400, {
-      "Content-Type": "json",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
+  try {
+    var response = await generatePasswordReset(req.body);
+    if (response === "Mail Sent!") {
+      res.writeHead(200, {
+        "Content-Type": "json",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
+        "Access-Control-Allow-Headers": process.env.HEADERS,
+      });
+    } else {
+      res.writeHead(400, {
+        "Content-Type": "json",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
+        "Access-Control-Allow-Headers": process.env.HEADERS,
+      });
+    }
+    res.write(response)
+    res.end();
+  } catch(e) {
+    console.log(e);
   }
-  res.write(response)
-  res.end();
 });
 
 app.post("/resetPassword", upload.none(), async function (req, res) {
-  var response = await resetPassword(req.body);
-  if (response === "Reset Done") {
-    res.writeHead(200, {
-      "Content-Type": "json",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
-  } else {
-    res.writeHead(400, {
-      "Content-Type": "json",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
+  try {
+    var response = await resetPassword(req.body);
+    if (response === "Reset Done") {
+      res.writeHead(200, {
+        "Content-Type": "json",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
+        "Access-Control-Allow-Headers": process.env.HEADERS,
+      });
+    } else {
+      res.writeHead(400, {
+        "Content-Type": "json",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
+        "Access-Control-Allow-Headers": process.env.HEADERS,
+      });
 
+    }
+    res.write(response);
+    res.end();
+  } catch(e) {
+    console.log(e)
   }
-  res.write(response);
-  res.end();
 });
 
 // Client Setup
