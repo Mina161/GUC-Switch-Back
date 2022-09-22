@@ -347,20 +347,22 @@ async function contactMatch(sender, receiver) {
       }
     });
 
-  var mailOptions = {
-    from: process.env.EMAIL,
-    to: info.email,
-    subject: "Switching Partner Found!",
-    html: "<h1>Hello " +
-      info.name +
-      "</h1><p>We found you a switching partner</p><br /><p>Name: " +
-      appUser.name +
-      ", Mobile Number: " +
-      appUser.phoneNo +
-      ", email: " +
-      appUser.email +
-      "</p><br /><p>Give them a call to confirm the switch</p>",
-  };
+  if(appUser) {
+    var mailOptions = {
+      from: process.env.EMAIL,
+      to: info.email,
+      subject: "Switching Partner Found!",
+      html: "<h1>Hello " +
+        info.name +
+        "</h1><p>We found you a switching partner</p><br /><p>Name: " +
+        appUser.name +
+        ", Mobile Number: " +
+        appUser.phoneNo +
+        ", email: " +
+        appUser.email +
+        "</p><br /><p>Give them a call to confirm the switch</p>",
+    };
+  }
 
   await transporter.sendMail(mailOptions);
 }
