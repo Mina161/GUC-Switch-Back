@@ -347,7 +347,7 @@ async function contactMatch(sender, receiver) {
       }
     });
 
-  if(appUser) {
+  if(appUser && info) {
     var mailOptions = {
       from: process.env.EMAIL,
       to: info.email,
