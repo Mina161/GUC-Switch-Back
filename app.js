@@ -393,6 +393,7 @@ async function generatePasswordReset(data) {
         html: "<h1>Hello " + user?.appNo + "!</h1>" +
           "<p>Have you requested to reset your password? Follow this link and reset your password within 10 minutes</p><br/>" +
           "<a href=\"" + process.env.BASE + "reset-password/" + token + "\">Click Here</a><br/>" +
+          "<p>If that doesn't work follow this link: reset-password/" + token +"</p><br/"+
           "<p>Not you? Ignore this email and secure your password</p>"
       };
       await transporter.sendMail(mailOptions); 
