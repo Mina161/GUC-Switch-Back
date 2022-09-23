@@ -401,16 +401,16 @@ async function contactMatch(sender, receiver) {
   if(sendUser!==null && recUser!==null) {
     var mailOptions = {
       from: process.env.EMAIL,
-      to: info.email,
+      to: recUser.email,
       subject: "Switching Partner Found!",
       html: "<h1>Hello " +
-        info.name +
+      recUser.name +
         "</h1><p>We found you a switching partner</p><br /><p>Name: " +
-        appUser.name +
+        sendUser.name +
         ", Mobile Number: " +
-        appUser.phoneNo +
+        sendUser.phoneNo +
         ", email: " +
-        appUser.email +
+        sendUser.email +
         "</p><br /><p>Give them a call to confirm the switch</p>",
     };
 
