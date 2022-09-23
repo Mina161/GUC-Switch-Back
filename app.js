@@ -171,13 +171,23 @@ app.get("/match", upload.none(), async function (req, res) {
 
 app.get("/match/contact", upload.none(), async function (req, res) {
   try {
-    await contactMatch(req.query.sender, req.query.receiver);
-    res.writeHead(200, {
-      "Content-Type": "text/plain",
-      "Access-Control-Allow-Origin": process.env.ORIGIN,
-      "Access-Control-Allow-Headers": process.env.HEADERS,
-    });
-    res.write("Mail Sent!");
+    var response = await contactMatch(req.query.sender, req.query.receiver);
+    console.log(req.query.sender, req.query.receiver)
+    if(!response) {
+      res.writeHead(200, {
+        "Content-Type": "text/plain",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
+        "Access-Control-Allow-Headers": process.env.HEADERS,
+      });
+      res.write("Mail Sent!");
+    } else {
+      res.writeHead(400, {
+        "Content-Type": "text/plain",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
+        "Access-Control-Allow-Headers": process.env.HEADERS,
+      });
+      res.write("Mail Failed!");
+    }
     res.end();
   } catch(e) {
     console.log(e);
@@ -368,14 +378,14 @@ var transporter = nodemailer.createTransport({
 
 async function contactMatch(sender, receiver) {
   await client.connect();
-  var appUser = await client
+  var sendUser = await client
     .db("GUC")
     .collection("students")
     .findOne({
       appNo: sender
     });
 
-  var info = await client
+  var recUser = await client
     .db("GUC")
     .collection("students")
     .findOne({
@@ -386,8 +396,9 @@ async function contactMatch(sender, receiver) {
         email: 1
       }
     });
-
-  if(appUser && info) {
+  
+  console.log(sendUser && recUser)
+  if(sendUser!==null && recUser!==null) {
     var mailOptions = {
       from: process.env.EMAIL,
       to: info.email,
@@ -402,9 +413,12 @@ async function contactMatch(sender, receiver) {
         appUser.email +
         "</p><br /><p>Give them a call to confirm the switch</p>",
     };
-  }
 
-  await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
+  } else {
+    return "Mail Failed"
+  }
+  
 }
 
 // Forgot Password Functions
