@@ -399,6 +399,18 @@ async function contactMatch(sender, receiver) {
   
   console.log(sendUser && recUser)
   if(sendUser!==null && recUser!==null) {
+
+    await client
+    .db("GUC")
+    .collection("requests")
+    .updateOne({
+      appNo: data.appNo
+    }, {
+      $push: {
+        contacted: receiver
+      }
+    });
+
     var mailOptions = {
       from: process.env.EMAIL,
       to: recUser.email,
