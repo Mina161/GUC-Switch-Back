@@ -404,7 +404,7 @@ async function contactMatch(sender, receiver) {
     .db("GUC")
     .collection("requests")
     .updateOne({
-      appNo: data.appNo
+      appNo: sender
     }, {
       $push: {
         contacted: receiver
