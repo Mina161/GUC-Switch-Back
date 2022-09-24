@@ -338,12 +338,17 @@ async function getMatches(appNo, limit, page) {
     });
 
   if (myRequest === null) return "No Request Found";
-
+  var myArray
+  if(myRequest.goTo.isArray()){
+    myArray = myRequest.goTo
+  } else {
+    myArray = [myRequest.goTo]
+  }
   const query = {
     major: myRequest.major,
     semester: myRequest.semester,
     tutNo: {
-      "$in" : myRequest.goTo.toArray()
+      "$in" : myArray
     },
     germanLevel: myRequest.germanLevel,
     englishLevel: myRequest.englishLevel,
