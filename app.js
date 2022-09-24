@@ -339,7 +339,7 @@ async function getMatches(appNo, limit, page) {
 
   if (myRequest === null) return "No Request Found";
   var myArray
-  if(myRequest.goTo.isArray()){
+  if(Array.isArray(myRequest.goTo)){
     myArray = myRequest.goTo
   } else {
     myArray = [myRequest.goTo]
