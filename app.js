@@ -343,7 +343,7 @@ async function getMatches(appNo, limit, page) {
     major: myRequest.major,
     semester: myRequest.semester,
     tutNo: {
-      $exists: myRequest.goTo
+      "$in" : myRequest.goTo
     },
     germanLevel: myRequest.germanLevel,
     englishLevel: myRequest.englishLevel,
