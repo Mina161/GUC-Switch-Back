@@ -404,14 +404,6 @@ async function contactMatch(sender, receiver) {
   
   console.log(sendUser && recUser)
   if(sendUser!==null && recUser!==null) {
-    var contacts = await client
-    .db("GUC")
-    .collection("requests")
-    .updateOne({
-      appNo: sender
-    }).contacted.toArray();
-
-    if(!contacts || !contacts?.includes(receiver)) {
       await client
       .db("GUC")
       .collection("requests")
@@ -439,9 +431,6 @@ async function contactMatch(sender, receiver) {
       };
 
       await transporter.sendMail(mailOptions);
-    } else {
-      return "Mail already sent to this user"
-    }
   } else {
     return "Mail Failed"
   }
