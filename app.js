@@ -404,34 +404,44 @@ async function contactMatch(sender, receiver) {
   
   console.log(sendUser && recUser)
   if(sendUser!==null && recUser!==null) {
-
-    await client
+    var contacts = await client
     .db("GUC")
     .collection("requests")
     .updateOne({
       appNo: sender
-    }, {
-      $push: {
-        contacted: receiver
-      }
-    });
+    }).contacted.toArray();
 
-    var mailOptions = {
-      from: process.env.EMAIL,
-      to: recUser.email,
-      subject: "Switching Partner Found!",
-      html: "<h1>Hello " +
-      recUser.name +
-        "</h1><p>We found you a switching partner</p><br /><p>Name: " +
-        sendUser.name +
-        ", Mobile Number: " +
-        sendUser.phoneNo +
-        ", email: " +
-        sendUser.email +
-        "</p><br /><p>Give them a call to confirm the switch</p>",
-    };
+    if(!contacts || !contacts?.includes(receiver)) {
+      await client
+      .db("GUC")
+      .collection("requests")
+      .updateOne({
+        appNo: sender
+      }, {
+        $push: {
+          contacted: receiver
+        }
+      });
 
-    await transporter.sendMail(mailOptions);
+      var mailOptions = {
+        from: process.env.EMAIL,
+        to: recUser.email,
+        subject: "Switching Partner Found!",
+        html: "<h1>Hello " +
+        recUser.name +
+          "</h1><p>We found you a switching partner</p><br /><p>Name: " +
+          sendUser.name +
+          ", Mobile Number: " +
+          sendUser.phoneNo +
+          ", email: " +
+          sendUser.email +
+          "</p><br /><p>Give them a call to confirm the switch</p>",
+      };
+
+      await transporter.sendMail(mailOptions);
+    } else {
+      return "Mail already sent to this user"
+    }
   } else {
     return "Mail Failed"
   }
