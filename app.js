@@ -383,11 +383,12 @@ async function getMatches(appNo, limit, page) {
 
 
 //Mail Setup
-var transporter = nodemailer.createTransport({
-  service: "yahoo",
+const transporter = nodemailer.createTransport({
+  port: 587,
+  host: "smtp-relay.sendinblue.com",
   auth: {
-    user: process.env.EMAIL,
-    pass: process.env.EMAIL_PASS,
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASS,
   },
 });
 
