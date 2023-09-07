@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
 // Connect to MongoDB using Mongoose
-mongoose.connect("mongodb+srv://admin:admin@cluster0.ujdx5.mongodb.net/?retryWrites=true&w=majority", {
+mongoose.connect(process.env.DR_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
