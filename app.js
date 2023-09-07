@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
 // Connect to MongoDB using Mongoose
-mongoose.connect(process.env.DR_URI, {
+mongoose.connect(process.env.DB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
