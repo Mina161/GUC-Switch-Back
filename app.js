@@ -40,7 +40,7 @@ const requestSchema = new mongoose.Schema({
   appNo: { type: String, required: true },
   student: { type: mongoose.Types.ObjectId, ref: "Student" },
   major: { type: String, enum: ["MET", "DMET", "IET", "EMS", "EDPT", "BI", "Architecture", "Applied Arts", "Civil", "Management", "Law", "Pharmacy"], required: true },
-  semester: { type: String, required: true },
+  semester: { type: Number, required: true },
   tutNo: { type: Number, required: true },
   goTo: [{ type: Number, required: true }],
   germanLevel: { type: String, required: true },
